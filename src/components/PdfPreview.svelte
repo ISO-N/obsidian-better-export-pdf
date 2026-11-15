@@ -11,16 +11,19 @@
   import { icon } from "../actions";
   import { initRenderStates, completeRenderState, type RenderState } from "../utils/renderStates";
   import { PageSizeCalculator } from "../utils/pageSize";
+  import type { Lang } from "../i18n";
   import pLimit from "p-limit";
   const fs = require("fs").promises;
 
   let {
     modal,
     plugin,
+    i18n,
     config = $bindable(),
   }: {
     modal: ExportConfigModal;
     plugin: BetterExportPdfPlugin;
+    i18n: Lang;
     config: ExportConfigType;
   } = $props();
 
@@ -199,7 +202,7 @@
 <div class="print-preview">
   <div class="progress">
     {#if renderStates.length > 0 && !renderStates.every((item) => item.status)}
-      <div>Rendering...</div>
+      <div>{i18n.labels.rendering}</div>
       {#each renderStates as item}
         <div>
           {#if item.status}
