@@ -25,7 +25,7 @@ In Obsidian go to `Settings > Third-party plugins > Community Plugins > Browse` 
 
 ### Manual installation
 
-1. Download the .zip file from [the latest Release](https://github.com/l1xnan/obsidian-better-export-pdf/releases), or from any other release version.
+1. Download the .zip file from [the latest Release](https://github.com/ISO-N/obsidian-better-export-pdf/releases), or from any other release version.
 2. Unzip into: `{VaultFolder}/.obsidian/plugins/`
 3. Reload Obsidian and enable the plug-in.
 
