@@ -1,5 +1,5 @@
 import { App, MarkdownView, Menu, Plugin, type PluginManifest, TFile, TFolder } from "obsidian";
-import i18n, { type Lang } from "./i18n";
+import i18n, { type Lang, setLanguage } from "./i18n";
 import { ExportConfigModal, type ExportConfigType } from "./modal";
 import ConfigSettingTab from "./setting";
 import { traverseFolder } from "./utils";
@@ -29,6 +29,7 @@ export interface BetterExportPdfPluginSettings {
   enabledCss: boolean;
   concurrency: string;
   version: string;
+  language: "system" | "zh" | "en";
 }
 
 const DEFAULT_SETTINGS: BetterExportPdfPluginSettings = {
@@ -49,6 +50,7 @@ const DEFAULT_SETTINGS: BetterExportPdfPluginSettings = {
   enabledCss: false,
   concurrency: "5",
   version: "2",
+  language: "system",
 };
 
 export default class BetterExportPdfPlugin extends Plugin {
@@ -63,9 +65,16 @@ export default class BetterExportPdfPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
+    setLanguage(this.settings.language);
+    this.i18n = i18n.current;
+
     this.registerCommand();
     this.registerSetting();
     this.registerEvents();
+  }
+
+  refreshI18n() {
+    this.i18n = i18n.current;
   }
 
   registerCommand() {
@@ -114,7 +123,7 @@ export default class BetterExportPdfPlugin extends Plugin {
     // Register the Export As HTML button in the file menu
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu, file: TFile | TFolder) => {
-        let title = file instanceof TFolder ? "Export folder to PDF" : "Better Export PDF";
+        let title = file instanceof TFolder ? this.i18n.menus.exportFolderToPdf : this.i18n.menus.betterExportPdf;
         if (isDev) {
           title = `${title} (dev)`;
         }
@@ -133,7 +142,7 @@ export default class BetterExportPdfPlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu, file: TFile | TFolder) => {
         if (file instanceof TFolder) {
-          let title = "Export to PDF...";
+          let title = this.i18n.menus.exportToPdf;
           if (isDev) {
             title = `${title} (dev)`;
           }
@@ -143,7 +152,7 @@ export default class BetterExportPdfPlugin extends Plugin {
             const subMenu: Menu = item.setSubmenu();
             subMenu.addItem((item) =>
               item
-                .setTitle("Export each file to PDF")
+                .setTitle(this.i18n.menus.exportEachFileToPdf)
                 .setIcon("lucide-file-stack")
                 .onClick(async () => {
                   new ExportConfigModal(this, file, true).open();
@@ -151,7 +160,7 @@ export default class BetterExportPdfPlugin extends Plugin {
             );
             subMenu.addItem((item) =>
               item
-                .setTitle("Generate TOC.md file")
+                .setTitle(this.i18n.menus.generateToc)
                 .setIcon("lucide-file-text")
                 .onClick(async () => {
                   await this.generateToc(file);

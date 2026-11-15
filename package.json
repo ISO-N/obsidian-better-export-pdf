@@ -11,7 +11,7 @@
     "version": "node version-bump.mjs && git add manifest.json versions.json"
   },
   "keywords": [],
-  "author": "",
+  "author": "JayCheng",
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.7.0",
@@ -43,9 +43,8 @@
     "version": "2.0.0",
     "minAppVersion": "0.15.0",
     "description": "Export your notes to PDF, support export preview, add bookmarks outline and header/footer.",
-    "author": "l1xnan",
-    "authorUrl": "https://github.com/l1xnan",
-    "fundingUrl": "https://www.buymeacoffee.com/l1xnan",
+    "author": "JayCheng",
+    "authorUrl": "https://github.com/ISO-N",
     "isDesktopOnly": true
   }
 }

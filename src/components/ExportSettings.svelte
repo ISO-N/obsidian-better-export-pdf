@@ -2,10 +2,12 @@
   import type BetterExportPdfPlugin from "../main";
   import type { ExportConfigType, ExportConfigModal } from "../modal";
   import { settingToggle, settingDropdown, settingSlider, settingButton, settingDoubleText } from "../actions";
+  import type { Lang } from "../i18n";
 
   let {
     modal,
     plugin,
+    i18n,
     config = $bindable(),
     pdfPreview,
     handleExport,
@@ -13,13 +15,13 @@
   }: {
     modal: ExportConfigModal;
     plugin: BetterExportPdfPlugin;
+    i18n: Lang;
     config: ExportConfigType;
     pdfPreview: any;
     handleExport: () => void;
     refreshPreview: () => Promise<void>;
   } = $props();
 
-  const i18n = $derived(plugin.i18n);
   const settings = $derived(plugin.settings);
 
   // ── Derived visibility states ──────────────────────────
@@ -28,19 +30,21 @@
 
   // ── Page sizes ─────────────────────────────────────────
   const pageSizes = ["A0", "A1", "A2", "A3", "A4", "A5", "A6", "Legal", "Letter", "Tabloid", "Ledger", "Custom"];
-  const pageSizeOptions = Object.fromEntries(pageSizes.map((s) => [s, s]));
+  let pageSizeOptions = $derived(
+    Object.fromEntries(pageSizes.map((s) => [s, s === "Custom" ? i18n.options.custom : s])),
+  );
 
-  const marginOptions: Record<string, string> = {
-    "0": "None",
-    "1": "Default",
-    "2": "Small",
-    "3": "Custom",
-  };
+  let marginOptions = $derived<Record<string, string>>({
+    "0": i18n.options.marginNone,
+    "1": i18n.options.marginDefault,
+    "2": i18n.options.marginSmall,
+    "3": i18n.options.custom,
+  });
 
   // ── CSS Snippets ───────────────────────────────────────
   const snippets = $derived(modal.cssSnippets());
   const hasSnippets = $derived(Object.keys(snippets).length > 0 && settings.enabledCss);
-  const snippetOptions = $derived({ "0": "Not select", ...snippets });
+  const snippetOptions = $derived({ "0": i18n.options.notSelect, ...snippets });
 
   function handleKeyup(event: KeyboardEvent) {
     if (event.key === "Enter") {
@@ -55,7 +59,7 @@
   <div
     use:settingToggle={{
       name: i18n.exportDialog.filenameAsTitle,
-      tooltip: "Include file name as title",
+      tooltip: i18n.exportDialog.filenameAsTitleTooltip,
       value: config.showTitle,
       onChange: (value) => {
         config.showTitle = value;
@@ -81,9 +85,9 @@
   {#if showCustomSize}
     <div
       use:settingDoubleText={{
-        name: "Width/Height",
+        name: i18n.labels.widthHeight,
         input1: {
-          placeholder: "width",
+          placeholder: i18n.labels.width,
           value: config.pageWidth ?? "",
           isDebounce: true,
           onChange: async (value) => {
@@ -92,7 +96,7 @@
           },
         },
         input2: {
-          placeholder: "height",
+          placeholder: i18n.labels.height,
           value: config.pageHeight ?? "",
           onChange: (value) => {
             config.pageHeight = value;
@@ -106,7 +110,7 @@
   <div
     use:settingDropdown={{
       name: i18n.exportDialog.margin,
-      desc: "The unit is millimeters.",
+      desc: i18n.exportDialog.marginDesc,
       options: marginOptions,
       value: config.marginType,
       onChange: (value) => {
@@ -119,16 +123,16 @@
   {#if showCustomMargin}
     <div
       use:settingDoubleText={{
-        name: "Top/Bottom",
+        name: i18n.labels.topBottom,
         input1: {
-          placeholder: "margin top",
+          placeholder: i18n.labels.marginTop,
           value: config.marginTop ?? "",
           onChange: (value) => {
             config.marginTop = value;
           },
         },
         input2: {
-          placeholder: "margin bottom",
+          placeholder: i18n.labels.marginBottom,
           value: config.marginBottom ?? "",
           onChange: (value) => {
             config.marginBottom = value;
@@ -140,16 +144,16 @@
     <!-- Custom Margin Left/Right -->
     <div
       use:settingDoubleText={{
-        name: "Left/Right",
+        name: i18n.labels.leftRight,
         input1: {
-          placeholder: "margin left",
+          placeholder: i18n.labels.marginLeft,
           value: config.marginLeft ?? "",
           onChange: (value) => {
             config.marginLeft = value;
           },
         },
         input2: {
-          placeholder: "margin right",
+          placeholder: i18n.labels.marginRight,
           value: config.marginRight ?? "",
           onChange: (value) => {
             config.marginRight = value;
@@ -175,7 +179,7 @@
   <div
     use:settingToggle={{
       name: i18n.exportDialog.landscape,
-      tooltip: "landscape",
+      tooltip: i18n.exportDialog.landscapeTooltip,
       value: config.landscape,
       onChange: (value) => {
         config.landscape = value;
@@ -187,7 +191,7 @@
   <div
     use:settingToggle={{
       name: i18n.exportDialog.displayHeader,
-      tooltip: "Display header",
+      tooltip: i18n.exportDialog.displayHeaderTooltip,
       value: config.displayHeader,
       onChange: (value) => {
         config.displayHeader = value;
@@ -199,7 +203,7 @@
   <div
     use:settingToggle={{
       name: i18n.exportDialog.displayFooter,
-      tooltip: "Display footer",
+      tooltip: i18n.exportDialog.displayFooterTooltip,
       value: config.displayFooter,
       onChange: (value) => {
         config.displayFooter = value;
@@ -211,7 +215,7 @@
   <div
     use:settingToggle={{
       name: i18n.exportDialog.openAfterExport,
-      tooltip: "Open the exported file after exporting.",
+      tooltip: i18n.exportDialog.openAfterExportTooltip,
       value: config.open,
       onChange: (value) => {
         config.open = value;
@@ -237,7 +241,7 @@
   <!-- Export Button -->
   <div
     use:settingButton={{
-      text: "Export",
+      text: i18n.buttons.export,
       cta: true,
       onClick: () => handleExport(),
     }}
@@ -247,7 +251,7 @@
   {#if settings.version == "1"}
     <div
       use:settingButton={{
-        text: "Refresh",
+        text: i18n.buttons.refresh,
         onClick: () => refreshPreview(),
       }}
     ></div>
@@ -256,7 +260,7 @@
   <!-- Debug Button -->
   <div
     use:settingButton={{
-      text: "Debug",
+      text: i18n.buttons.debug,
       hidden: !settings?.debug,
       onClick: () => pdfPreview?.handleOpenDevTools(),
     }}

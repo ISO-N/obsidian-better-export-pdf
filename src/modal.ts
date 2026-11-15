@@ -88,7 +88,7 @@ export class ExportConfigModal extends Modal {
   onOpen() {
     this.contentEl.empty();
     this.containerEl.style.setProperty("--dialog-width", "60vw");
-    this.titleEl.setText("Export to PDF");
+    this.titleEl.setText(this.i18n.dialogs.exportToPdf);
     const missingVars = getDerivedLightVars();
     console.debug("检测到以下衍生变量在亮色主题下未重置，即将进行注入：", missingVars);
     // 步骤 2：注入补丁样式
@@ -98,6 +98,7 @@ export class ExportConfigModal extends Modal {
       props: {
         modal: this,
         plugin: this.plugin,
+        i18n: this.i18n,
       },
     });
   }

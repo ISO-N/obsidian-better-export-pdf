@@ -25,7 +25,7 @@ Better Export PDF 是一个 Obsidian PDF 导出增强插件，与官方的 PDF �
 
 ### 手动安装
 
-1. 在 [Release](https://github.com/l1xnan/obsidian-better-export-pdf/releases) 页面，下载 zip 包
+1. 在 [Release](https://github.com/ISO-N/obsidian-better-export-pdf/releases) 页面，下载 zip 包
 2. 解压到: `{VaultFolder}/.obsidian/plugins/`
 3. 重启 Obdisian，并再插件管理器中启用插件。
 
@@ -195,12 +195,3 @@ toc: true
 - [x] 完善默认 `@media print` css 样式；
 - [x] 支持将文档属性添加到 PDF 元数据中；
 - [x] 保留文档内链接跳转；
-
-## 赞助
-
-如果这个插件帮到了您，请点击 Star 或者我喝一杯奶茶吧！
-
-<div align="center">
-<img src="./assets/sponsor-chat.png" width="300px"/>
-<img src="./assets/sponsor-alipay.png" width="300px"/>
-</div>

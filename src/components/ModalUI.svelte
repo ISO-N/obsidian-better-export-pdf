@@ -6,13 +6,16 @@
   import { untrack } from "svelte";
   import PdfPreview1 from "./PdfPreview.svelte";
   import PdfPreview2 from "./PdfPreviewV2.svelte";
+  import type { Lang } from "../i18n";
 
   let {
     modal,
     plugin,
+    i18n,
   }: {
     modal: ExportConfigModal;
     plugin: BetterExportPdfPlugin;
+    i18n: Lang;
   } = $props();
 
   let config = $state<ExportConfigType>(untrack(() => $state.snapshot(modal.defaultConfig)));
@@ -37,7 +40,7 @@
 
     if (config["pageSize"] == "Custom") {
       if (!isNumber(config["pageWidth"] ?? "") || !isNumber(config["pageHeight"] ?? "")) {
-        alert("When the page size is Custom, the Width/Height cannot be empty.");
+        alert(i18n.alerts.customSizeEmpty);
         return;
       }
     }
@@ -51,11 +54,11 @@
 <div id="better-export-pdf">
   <!-- PDF Preview Area -->
   {#if plugin.settings?.version == "1"}
-    <PdfPreview1 {modal} {plugin} {config} bind:this={pdfPreview} />
+    <PdfPreview1 {modal} {plugin} {i18n} {config} bind:this={pdfPreview} />
   {:else}
-    <PdfPreview2 {modal} {plugin} {config} bind:this={pdfPreview} />
+    <PdfPreview2 {modal} {plugin} {i18n} {config} bind:this={pdfPreview} />
   {/if}
 
   <!-- Settings Sidebar -->
-  <ExportSettings {modal} {plugin} bind:config {pdfPreview} {handleExport} {refreshPreview} />
+  <ExportSettings {modal} {plugin} {i18n} bind:config {pdfPreview} {handleExport} {refreshPreview} />
 </div>
