@@ -1,3 +1,4 @@
+import { getLanguage } from "obsidian";
 import merge from "deepmerge";
 import en from "./en";
 import zh from "./zh";
@@ -10,10 +11,18 @@ export function setLanguage(lang: string | null) {
   preferred = lang;
 }
 
+// Obsidian >= 1.8.7 exposes the resolved app language (including "follow system").
+// Older versions fall back to Obsidian's own resolution: localStorage first, then system locale.
+function getAppLanguage(): string {
+  if (typeof getLanguage === "function") {
+    const lang = getLanguage();
+    if (lang) return lang;
+  }
+  return window.localStorage.getItem("language") || window.navigator.language || "en";
+}
+
 function resolveLang(): "en" | "zh" {
-  const raw = (
-    preferred && preferred !== "system" ? preferred : window.localStorage.getItem("language") ?? "en"
-  ).toLowerCase();
+  const raw = (preferred && preferred !== "system" ? preferred : getAppLanguage()).toLowerCase();
   // Only en/zh dictionaries exist; treat any zh* locale (zh, zh-cn, zh-tw) as zh.
   return raw.startsWith("zh") ? "zh" : "en";
 }
