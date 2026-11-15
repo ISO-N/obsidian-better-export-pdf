@@ -119,3 +119,13 @@
     text-shadow: initial !important;
   }
 }
+
+/* 导出时图片默认居中：部分主题只在阅读视图内（依赖 workspace 祖先）居中图片，
+   导出 DOM 中缺少该祖先会居左。用 :where() 降低优先级，主题显式对齐仍可覆盖。 */
+.print
+  :where(.markdown-preview-view, .markdown-rendered)
+  :where(.internal-embed.image-embed img, p > img:only-child):where(:not([class*="emoji"])) {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
